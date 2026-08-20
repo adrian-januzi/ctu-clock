@@ -11,11 +11,6 @@ final class TimerEngine: ObservableObject {
     }
     @Published var isRunning: Bool = false
 
-    // Random duration mode
-    @Published var useRandomDuration: Bool = false
-    @Published var minRandomMinutes: Double = 15
-    @Published var maxRandomMinutes: Double = 45
-
     // Random sound cue settings
     @Published var soundEnabled: Bool = true
     @Published var minCooldownSeconds: Double = 45
@@ -51,7 +46,7 @@ final class TimerEngine: ObservableObject {
 
     func start() {
         if remainingSeconds <= 0 {
-            remainingSeconds = resolveDurationSeconds()
+            remainingSeconds = totalMinutes * 60
         }
         guard !isRunning else { return }
         isRunning = true
@@ -69,18 +64,8 @@ final class TimerEngine: ObservableObject {
 
     func reset() {
         pause()
-        remainingSeconds = resolveDurationSeconds()
+        remainingSeconds = totalMinutes * 60
         nextCueDate = nil
-    }
-
-    private func resolveDurationSeconds() -> Int {
-        if useRandomDuration {
-            let lo = Int(min(minRandomMinutes, maxRandomMinutes))
-            let hi = Int(max(minRandomMinutes, maxRandomMinutes))
-            return Int.random(in: lo...hi) * 60
-        } else {
-            return totalMinutes * 60
-        }
     }
 
     private func tick() {
