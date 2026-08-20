@@ -52,12 +52,33 @@ struct ControlPanel: View {
 
             Divider()
 
-            Picker("Duration", selection: $engine.totalMinutes) {
-                ForEach(presetMinutes, id: \.self) { m in
-                    Text("\(m) min").tag(m)
+            Toggle("Random duration", isOn: $engine.useRandomDuration)
+                .disabled(engine.isRunning)
+
+            if engine.useRandomDuration {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Range: \(Int(engine.minRandomMinutes)) – \(Int(engine.maxRandomMinutes)) min")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    HStack {
+                        Text("Min")
+                        Slider(value: $engine.minRandomMinutes, in: 1...90, step: 1)
+                    }
+                    HStack {
+                        Text("Max")
+                        Slider(value: $engine.maxRandomMinutes, in: 1...120, step: 1)
+                    }
                 }
+                .disabled(engine.isRunning)
+            } else {
+                Picker("Duration", selection: $engine.totalMinutes) {
+                    ForEach(presetMinutes, id: \.self) { m in
+                        Text("\(m) min").tag(m)
+                    }
+                }
+                .disabled(engine.isRunning)
             }
-            .disabled(engine.isRunning)
 
             Divider()
 
